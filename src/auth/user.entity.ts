@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
-import { hash } from 'bcrypt';
+import { compare } from 'bcrypt';
 import { Task } from '../task/task.entity';
 
 @Entity()
@@ -28,7 +28,6 @@ export class User extends BaseEntity {
   tasks: Task[];
 
   async validatePassword(password: string): Promise<boolean> {
-    const hashPassword = await hash(password, this.salt);
-    return hashPassword === this.password;
+    return await compare(password, this.password);
   }
 }
