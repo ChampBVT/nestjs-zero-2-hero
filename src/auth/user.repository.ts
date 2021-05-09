@@ -12,10 +12,10 @@ export class UserRepository extends Repository<User> {
   async signUp(authCredentialDto: AuthCredentialDto): Promise<void> {
     const { username, password } = authCredentialDto;
 
-    const user = new User();
+    const user = this.create(); // Useful for testing
     user.username = username;
     user.salt = await genSalt();
-    user.password = await UserRepository.hashPassword(password, user.salt);
+    user.password = await this.hashPassword(password, user.salt);
 
     try {
       await user.save();
@@ -38,10 +38,8 @@ export class UserRepository extends Repository<User> {
     return null;
   }
 
-  private static async hashPassword(
+  private hashPassword = async (
     password: string,
     salt: string,
-  ): Promise<string> {
-    return hash(password, salt);
-  }
+  ): Promise<string> => hash(password, salt);
 }
