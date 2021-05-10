@@ -32,7 +32,7 @@ export class TaskController {
 
   @Get()
   getTasks(
-    @Query(ValidationPipe) filterDto: GetTaskFilterDto,
+    @Query() filterDto: GetTaskFilterDto,
     @GetUser() user: User,
   ): Promise<Task[]> {
     this.logger.verbose(
@@ -52,7 +52,6 @@ export class TaskController {
   }
 
   @Post()
-  @UsePipes(ValidationPipe)
   createTask(
     @Body() createTaskDto: CreateTaskDto,
     @GetUser() user: User,

@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { get } from 'config';
 
@@ -14,6 +14,8 @@ async function bootstrap() {
     app.enableCors({ origin: get('server.origin') });
     logger.log(`Accepting request from origin ${get('server.origin')}`);
   }
+
+  app.useGlobalPipes(new ValidationPipe());
 
   await app.listen(port);
 
