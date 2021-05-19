@@ -45,8 +45,10 @@ jobs:
       
     - name: Testing E2E
       env: 
-        JWT_SECRET: secretToken
+        NODE_ENV: development
       run: yarn test:e2e
     
     - name: Building
+      env: 
+        NODE_ENV: development
       run: yarn build
