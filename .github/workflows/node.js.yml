@@ -12,11 +12,12 @@ on:
 jobs:
   build:
 
-    runs-on: [self-hosted, ubuntu-latest]
+    runs-on: ${{ matrix.runs-on }}
 
     strategy:
       matrix:
         node-version: [14.x]
+        runs-on: [self-hosted, ubuntu-latest]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
