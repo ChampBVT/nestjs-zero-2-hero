@@ -40,7 +40,9 @@ jobs:
     - name: Linting
       run: yarn lint
       
-    - name: Testing 
+    - name: Testing
+      env: 
+        secret: secretToken
       run: yarn test
       
     - name: Testing E2E
