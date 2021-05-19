@@ -42,7 +42,7 @@ jobs:
       
     - name: Testing
       env: 
-        secret: secretToken
+        JWT_SECRET: secretToken
       run: yarn test
       
     - name: Testing E2E
