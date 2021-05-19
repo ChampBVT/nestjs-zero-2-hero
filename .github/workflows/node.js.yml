@@ -43,10 +43,7 @@ jobs:
     - name: Testing
       run: yarn test
       
-    - name: Testing E2E
-      env: 
-        NODE_ENV: development
-      run: yarn test:e2e
+    - name: Skipping Testing E2E
     
     - name: Building
       env: 
