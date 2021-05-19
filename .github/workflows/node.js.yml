@@ -41,11 +41,11 @@ jobs:
       run: yarn lint
       
     - name: Testing
-      env: 
-        JWT_SECRET: secretToken
       run: yarn test
       
     - name: Testing E2E
+      env: 
+        JWT_SECRET: secretToken
       run: yarn test:e2e
     
     - name: Building
