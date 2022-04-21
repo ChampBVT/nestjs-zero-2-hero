@@ -62,6 +62,9 @@ jobs:
     - name: Building
       run: yarn build
 
+    - name: Deploying
+      run: echo Deploying...
+
     - name: Gather deployment result info
       id: deployment-result
       env:
