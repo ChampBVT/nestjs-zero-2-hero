@@ -62,6 +62,13 @@ jobs:
     - name: Building
       run: yarn build
 
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: development
+      url: ${{ steps.deployment-result.outputs.status-url }}
+    steps:
     - name: Deploying
       run: echo Deploying...
 
@@ -69,5 +76,5 @@ jobs:
       id: deployment-result
       env:
         # TODO: Replace with `${{ secrets.DEV_API_URL }}/status` if possible.
-        DEV_API_STATUS_URL: 'https://google.co,th'
+        DEV_API_STATUS_URL: 'https://google.com'
       run: echo "::set-output name=status-url::$DEV_API_STATUS_URL"
