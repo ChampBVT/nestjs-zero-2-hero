@@ -61,3 +61,10 @@ jobs:
     
     - name: Building
       run: yarn build
+
+    - name: Gather deployment result info
+      id: deployment-result
+      env:
+        # TODO: Replace with `${{ secrets.DEV_API_URL }}/status` if possible.
+        DEV_API_STATUS_URL: 'https://google.co,th'
+      run: echo "::set-output name=status-url::$DEV_API_STATUS_URL"
