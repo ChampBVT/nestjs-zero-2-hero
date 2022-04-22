@@ -59,8 +59,7 @@ jobs:
     - name: Download commits
       id: commits
       run: |
-        COMMITS=curl ${{ github.event.pull_request._links.commits.href }} | jq 'map(.commit.message)'
-        echo "::set-output name=matrix::$COMMIT"
+        echo "::set-output name=matrix::$(curl ${{ github.event.pull_request._links.commits.href }} | jq 'map(.commit.message)')"
 
     - name: Show commits
       run: |
