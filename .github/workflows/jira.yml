@@ -26,7 +26,7 @@ jobs:
         from: commits
 
     - name: List found ticket
-      run: echo {{ steps.find-ticket.outputs.issue }}
+      run: echo ${{ steps.find-ticket.outputs.issue }}
 
     - name: Transition issue
       if: ${{ steps.find-ticket.outputs.issue }}
