@@ -23,8 +23,8 @@ jobs:
         id: find-ticket
         uses: atlassian/gajira-find-issue-key@master
         with:
-          string: |
-            ${{ matrix.message }}
+          string: ${{ matrix.message }}
+          from: ''
 
       - name: Transition ticket to in progress
         if: ${{ steps.find-ticket.outputs.issue }}
