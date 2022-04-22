@@ -14,13 +14,16 @@ jobs:
   in-progress:
     runs-on: ubuntu-latest
     name: JIRA In progress
-    strategy:
-      matrix: 
-        message: ${{ github.event.commits.*.message }}
+    # strategy:
+    #   matrix: 
+    #     message: ${{ github.event.commits.*.message }}
     steps:
     - name: Check action
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
       run: |
         echo ${{ github.event.action }}
+        echo "$GITHUB_CONTEXT"
 
     - name: Login to JIRA
       uses: atlassian/gajira-login@master
@@ -33,8 +36,8 @@ jobs:
       id: find-ticket
       uses: atlassian/gajira-find-issue-key@master
       with:
-        string: |
-          ${{ matrix.message }}
+        # string: |
+        #   ${{ matrix.message }}
         from: ''
 
     - name: Transition ticket to in progress
