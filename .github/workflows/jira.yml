@@ -68,9 +68,9 @@ jobs:
           # end of optional handling for multi line json
           echo "::set-output name=matrix::$content"
 
-    - name: Show commits
-      run: |
-        echo ${{ steps.commits.outputs.matrix }}
+    # - name: Show commits
+    #   run: |
+    #     echo ${{ steps.commits.outputs.matrix }}
 
   done:
     if: ${{ github.event.action == 'ready_for_review' }}
