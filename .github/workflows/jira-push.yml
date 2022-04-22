@@ -1,7 +1,7 @@
 
 on: 
   push:
-    branches: ['*']
+    branches-ignore: ['develop', 'main']
 
 name: Jira push integrations
 
