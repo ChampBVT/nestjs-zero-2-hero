@@ -27,8 +27,8 @@ jobs:
     runs-on: ubuntu-latest
     name: In progress
     needs: get-commit-messages
-    # strategy:
-    #   matrix: ${{needs.get-commit-messages.outputs.matrix}}
+    strategy:
+      matrix: ${{github.event.commits.*.message}}
     steps:
     - name: Login to JIRA
       uses: atlassian/gajira-login@master
@@ -39,7 +39,7 @@ jobs:
 
     - name: List found ticket
       run: |
-        echo ${{ fromJson(needs.get-commit-messages.outputs.matrix) }}
+        # echo ${{ fromJson(needs.get-commit-messages.outputs.matrix) }}
         echo ${{ needs.get-commit-messages.outputs.matrix }}
         echo ${{ steps.find-ticket.outputs.issue }}
         echo ${{ github.event.pull_request.title }}
