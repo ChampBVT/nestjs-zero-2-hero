@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    if: ${{ (github.event.action != 'labeled' || github.event.pull_request.labels.name == 'staging') }}
+    if: ${{ (github.event.action != 'labeled' || github.event.label.name == 'staging') }}
     runs-on: ${{ matrix.runs-on }}
 
     strategy:
