@@ -18,12 +18,41 @@ jobs:
         JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
         JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
         JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+        
+    - name: Get current PR information
+      uses: 8BitJonny/gh-get-current-pr@2.0.0
+      id: pr
+      with:
+        # Verbose setting SHA when using Pull_Request event trigger to fix #16
+        sha: ${{ github.event.pull_request.head.sha }}
+        # Only return if PR is still open
+        filterOutClosed: true
+        # Only return if PR is not in draft state
+        filterOutDraft: 1
 
     - name: Find in commit messages
       id: find-ticket
       uses: atlassian/gajira-find-issue-key@master
       with:
         from: commits
+        string: |
+          ${{ steps.PR.outputs.pr_title }}
+          ${{ steps.PR.outputs.pr_body }}
+
+    - run: echo "Your PR is ${prNumber} and its JSON is ${prJSON}"
+      if: success() && steps.PR.outputs.number
+      env:
+        prNumber: ${{ steps.PR.outputs.number }}
+        # JSON object with the full PR object
+        prJSON: ${{ steps.PR.outputs.pr }}
+        # Direct access to common PR properties
+        prUrl: ${{ steps.PR.outputs.pr_url }}
+        prTitle: ${{ steps.PR.outputs.pr_title }}
+        prBody: ${{ steps.PR.outputs.pr_body }}
+        prCreatedAt: ${{ steps.PR.outputs.pr_created_at }}
+        prMergedAt: ${{ steps.PR.outputs.pr_merged_at }}
+        prClosedAt: ${{ steps.PR.outputs.pr_closed_at }}
+        prLabel: ${{ steps.PR.outputs.pr_labels }}
 
     - name: List found ticket
       run: echo ${{ steps.find-ticket.outputs.issue }}
