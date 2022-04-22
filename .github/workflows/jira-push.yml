@@ -8,9 +8,6 @@ jobs:
   in-progress:
     runs-on: ubuntu-latest
     name: JIRA ticket In progress
-    strategy:
-      matrix:
-        message: ${{ github.event.commits.*.message }}
     steps:
       - name: Login to JIRA
         uses: atlassian/gajira-login@master
