@@ -4,6 +4,9 @@ on:
     branches: ['*']
   pull_request:
     branches: ['develop']
+    types:
+      - ready_for_review
+      - labeled
 
 name: Jira integrations
 
