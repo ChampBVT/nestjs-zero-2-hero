@@ -1,20 +1,19 @@
 # This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Staging Ubuntu
+name: Deploy production
 
 on:
-  pull_request:
-    branches: [ main, CI/CD ]
+  push:
+    branches: [ main ]
 
 jobs:
   build:
-
     runs-on: ${{ matrix.runs-on }}
 
     strategy:
       matrix:
-        node-version: [14.x, 15.x]
+        node-version: [16.x]
         runs-on: [ubuntu-latest]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
         
@@ -61,3 +60,20 @@ jobs:
     
     - name: Building
       run: yarn build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: development
+      url: ${{ steps.deployment-result.outputs.status-url }}
+    steps:
+    - name: Deploying
+      run: echo Deploying...
+
+    - name: Gather deployment result info
+      id: deployment-result
+      env:
+        # TODO: Replace with `${{ secrets.DEV_API_URL }}/status` if possible.
+        DEV_API_STATUS_URL: 'https://google.com'
+      run: echo "::set-output name=status-url::$DEV_API_STATUS_URL"

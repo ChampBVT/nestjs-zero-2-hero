@@ -1,0 +1,91 @@
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Deploy development
+
+on:
+  pull_request:
+    types:
+      - labeled
+    branches: [ develop ]
+  push:
+    branches: [ develop ]
+
+jobs:
+  build:
+    if: ${{ (github.event.action != 'labeled' || github.event.label.name == 'deploy-dev') }}
+    runs-on: ${{ matrix.runs-on }}
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+        runs-on: [ubuntu-latest]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        
+    services:
+      postgres:
+        image: postgres:13
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: taskmanagement
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          TZ: UTC
+          PGTZ: UTC
+        options: --restart=unless-stopped
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        
+    - name: Installing yarn
+      run: npm install -g yarn
+    
+    - name: Installing dependencies
+      run: yarn install
+      
+    - name: Prettifying
+      run: yarn format
+      
+    - name: Linting
+      run: yarn lint
+      
+    - name: Testing
+      run: yarn test
+      
+    - name: Testing E2E
+      env:
+        NODE_ENV: development
+      run: yarn test:e2e
+    
+    - name: Building
+      run: yarn build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: development
+      url: ${{ steps.deployment-result.outputs.status-url }}
+    steps:
+    - name: Remove deploy-dev label
+      uses: mondeja/remove-labels-gh-action@v1
+      if: ${{ github.event.action == 'labeled' }}
+      with:
+        labels: |
+         deploy-dev
+
+    - name: Deploying
+      run: echo Deploying...
+
+    - name: Gather deployment result info
+      id: deployment-result
+      env:
+        # TODO: Replace with `${{ secrets.DEV_API_URL }}/status` if possible.
+        DEV_API_STATUS_URL: 'https://google.com'
+      run: echo "::set-output name=status-url::$DEV_API_STATUS_URL"
