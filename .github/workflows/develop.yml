@@ -73,6 +73,13 @@ jobs:
       name: development
       url: ${{ steps.deployment-result.outputs.status-url }}
     steps:
+    - name: Remove deploy-dev label
+      uses: mondeja/remove-labels-gh-action@v1
+      if: ${{ github.event.action == 'labeled' }}
+      with:
+        labels: |
+         deploy-dev
+
     - name: Deploying
       run: echo Deploying...
 
