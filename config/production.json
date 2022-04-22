@@ -1,0 +1,11 @@
+{
+  "server": {
+    "origin": ""
+  },
+  "db": {
+    "synchronize": false
+  },
+  "jwt": {
+    "secret": "topSecret51"
+  }
+}

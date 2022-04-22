@@ -1,7 +1,7 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { IConfig, get } from 'config';
+import * as config from 'config';
 
-const dbConfig: IConfig = get('db');
+const dbConfig: config.IConfig = config.get('db');
 
 export const typeOrmConfig: TypeOrmModuleOptions = {
   type: 'postgres',

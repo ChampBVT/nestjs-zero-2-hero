@@ -1,8 +1,0 @@
-db:
-  synchronize: false
-
-server:
-  origin: ''
-
-jwt:
-  secret: 'topSecret51'

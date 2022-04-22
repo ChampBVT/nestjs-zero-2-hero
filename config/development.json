@@ -1,0 +1,17 @@
+{
+  "server": {
+    "port": 3000
+  },
+  "db": {
+    "type": "postgres",
+    "port": 5432,
+    "database": "taskmanagement",
+    "host": "localhost",
+    "username": "postgres",
+    "password": "postgres",
+    "synchronize": true
+  },
+  "jwt": {
+    "secret": "topSecret51"
+  }
+}

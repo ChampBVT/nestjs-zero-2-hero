@@ -32,7 +32,7 @@ export class UserRepository extends Repository<User> {
     authCredentialDto: AuthCredentialDto,
   ): Promise<string> {
     const { username, password } = authCredentialDto;
-    const user = await this.findOne({ username });
+    const user = await this.findOne({ where: { username } });
 
     if (user && (await user.validatePassword(password))) return user.username;
     return null;
