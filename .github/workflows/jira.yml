@@ -2,11 +2,14 @@
 on: 
   push:
     branches: ['*']
+  pull_request:
+    branches: ['develop']
 
 name: Jira integrations
 
 jobs:
-  move-tickets:
+  in-progress:
+    if: ${{ github.event.action == 'push' }}
     runs-on: ubuntu-latest
     name: JIRA In progress
     strategy:
@@ -34,3 +37,33 @@ jobs:
       with:
         issue: ${{ steps.find-ticket.outputs.issue }}
         transition: "In progress"
+
+  done:
+    if: ${{ github.event.action == 'pull_request' }}
+    runs-on: ubuntu-latest
+    name: JIRA In progress
+    strategy:
+      matrix: 
+        message: ${{ github.event.commits.*.message }}
+    steps:
+    - name: Login to JIRA
+      uses: atlassian/gajira-login@master
+      env:
+        JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+        JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+        JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+
+    - name: Find in commit messages
+      id: find-ticket
+      uses: atlassian/gajira-find-issue-key@master
+      with:
+        string: |
+          ${{ matrix.message }}
+        from: ''
+
+    - name: Transition ticket to in progress
+      if: ${{ steps.find-ticket.outputs.issue }}
+      uses: atlassian/gajira-transition@master
+      with:
+        issue: ${{ steps.find-ticket.outputs.issue }}
+        transition: "Done"
