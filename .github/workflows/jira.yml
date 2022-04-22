@@ -50,7 +50,7 @@ jobs:
         transition: "In progress"
 
   get-commits:
-    # if: ${{ github.event.action == 'ready_for_review' }}
+    if: ${{ github.event.action == 'ready_for_review' }}
     name: Get commits
     runs-on: ubuntu-latest
     outputs:
@@ -59,22 +59,24 @@ jobs:
     - name: Download commits
       id: commits
       run: |
-        AAA=curl ${{ github.event.pull_request._links.commits.href }} | jq -c 'map(.commit.message)' | tr -d '"'
-        echo "::set-output name=matrix::$AAA"
+        echo "::set-output name=matrix::{\"message\":$(curl ${{ github.event.pull_request._links.commits.href }} | jq -c 'map(.commit.message)')}"
 
     - name: Show commits
       run: |
         echo ${{ steps.commits.outputs.matrix }}
 
   done:
-    # if: ${{ github.event.action == 'ready_for_review' }}
+    if: ${{ github.event.action == 'ready_for_review' }}
     runs-on: ubuntu-latest
     needs: get-commits
     name: JIRA In progress
     strategy:
-      matrix: 
-        message: ${{ needs.get-commits.steps.commits.outputs.matrix }}
+      matrix: ${{ fromJson(needs.get-commits.outputs.matrix) }}
     steps:
+    - name: Show commits
+      run: |
+        echo ${{ needs.get-commits.outputs.matrix }}
+
     - name: Login to JIRA
       uses: atlassian/gajira-login@master
       env:
