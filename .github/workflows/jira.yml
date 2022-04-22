@@ -1,7 +1,7 @@
 
 on: 
-  # pull_request:
-  #   branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
   push:
     branches: ['*']
 
@@ -10,7 +10,7 @@ name: Jira integrations
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Jira move ticket to in progress
+    name: In progress
     steps:
     - name: Login to JIRA
       uses: atlassian/gajira-login@master
