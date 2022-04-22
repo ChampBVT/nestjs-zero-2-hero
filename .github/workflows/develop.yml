@@ -93,6 +93,7 @@ jobs:
   qa:
     needs: deploy
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' }}
     strategy:
       matrix: 
         message: ${{ github.event.commits.*.message }}
