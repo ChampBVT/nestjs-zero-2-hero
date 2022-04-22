@@ -49,13 +49,38 @@ jobs:
         issue: ${{ steps.find-ticket.outputs.issue }}
         transition: "In progress"
 
+  get-commits:
+    if: ${{ github.event.action == 'ready_for_review' }}
+    name: Get commits
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.commits.outputs.matrix }}
+    steps:
+    - name: Download commits
+      id: commits
+      run: |
+        curl ${{ github.event.pull_request._links.commits }} -o "commits.json"
+        content=`cat commits.json`
+          # the following lines are only required for multi line json
+          content="${content//'%'/'%25'}"
+          content="${content//$'\n'/'%0A'}"
+          content="${content//$'\r'/'%0D'}"
+          # end of optional handling for multi line json
+          echo "::set-output name=matrix::$content"
+
+    - name: Show commits
+      run: |
+        echo ${{ steps.commits.outputs.matrix }}
+        echo ${{ fromJson(steps.commits.outputs.matrix) }}
+
   done:
     if: ${{ github.event.action == 'ready_for_review' }}
     runs-on: ubuntu-latest
+    needs: get-commits
     name: JIRA In progress
     strategy:
       matrix: 
-        message: ${{ github.event.pull_request._links.commits.*.message }}
+        message: ${{ github.event.pull_request._links.commits.*.commit.message }}
     steps:
     - name: Login to JIRA
       uses: atlassian/gajira-login@master
