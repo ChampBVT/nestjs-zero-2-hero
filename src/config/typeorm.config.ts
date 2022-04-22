@@ -6,7 +6,7 @@ const dbConfig: IConfig = get('db');
 export const typeOrmConfig: TypeOrmModuleOptions = {
   type: 'postgres',
   host: process.env.RDS_HOSTNAME ?? dbConfig.get('host'),
-  port: Number(process.env.RDS_PORT) ?? dbConfig.get('port'),
+  port: Number(process.env.RDS_PORT) || dbConfig.get('port'),
   username: process.env.RDS_USERNAME ?? dbConfig.get('username'),
   password: process.env.RDS_PASSWORD ?? dbConfig.get('password'),
   database: process.env.RDS_DB_NAME ?? dbConfig.get('database'),

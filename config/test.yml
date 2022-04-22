@@ -1,7 +1,7 @@
 db:
   type: 'postgres'
   port: 5432
-  database: 'taskmanagement'
+  database: 'taskmanagement_test'
   host: 'localhost'
   username: 'postgres'
   password: 'postgres'
