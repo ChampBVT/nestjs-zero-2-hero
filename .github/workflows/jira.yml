@@ -10,14 +10,17 @@ name: Jira integrations
 jobs:
   get-commit-messages:
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.commits.outputs.matrix }}
     name: Get commits
     steps:
       - name: 'List github event'
+        id: commits
         run: |
           echo "${{toJSON(github.event.pull_request.title)}}"
           echo "${{toJSON(github.event.pull_request.description)}}"
           echo "${{github.event.commits.*.message}}"
-          echo "::set-output name=matrix::${{toJSON(github.event.commits)}}"
+          echo "::set-output name=matrix::${{github.event.commits.*.message}}"
   
   move-tickets:
     runs-on: ubuntu-latest
