@@ -1,14 +1,13 @@
 
 on: 
-  push:
-    branches: ['*']
   pull_request:
     branches: ['develop']
     types:
       - ready_for_review
       - opened
+      - converted_to_draft
 
-name: Jira integrations
+name: Jira pr integrations
 
 jobs:
     # Pull_request event doesn't supply any commits reference except the link to the api 
@@ -18,13 +17,6 @@ jobs:
     outputs:
       matrix: ${{ steps.commits.outputs.matrix }}
     steps:
-    - name: Check action
-      env:
-        GITHUB_CONTEXT: ${{ toJson(github) }}
-      run: |
-        echo ${{ github.event.action }}
-        echo "$GITHUB_CONTEXT"
-
     - name: Download commits
       id: commits
       run: |
@@ -37,10 +29,10 @@ jobs:
   in-progress:
     runs-on: ubuntu-latest
     name: JIRA In progress
-    if: ${{ github.event.action == 'converted_to_draft' || github.event_name == 'push' }}
+    if: ${{ github.event.action == 'converted_to_draft' || github.event.action == 'opened' }}
     needs: get-commits
     strategy:
-      matrix: ${{ fromJson(needs.get-commits.outputs.matrix) || github.event.commits.*.message }}
+      matrix: ${{ fromJson(needs.get-commits.outputs.matrix) }}
     steps:
     - name: Login to JIRA
       uses: atlassian/gajira-login@master
@@ -64,7 +56,7 @@ jobs:
         transition: "In progress"
 
   done:
-    if: ${{ github.event.action == 'ready_for_review' || github.event.action == 'opened' }}
+    if: ${{ github.event.action == 'ready_for_review' }}
     runs-on: ubuntu-latest
     needs: get-commits
     name: JIRA Done
