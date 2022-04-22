@@ -59,8 +59,8 @@ jobs:
     - name: Download commits
       id: commits
       run: |
-        curl ${{ github.event.pull_request._links.commits.href }} -o "commits.json"
-        echo "::set-output name=matrix::$(cat commits.json | jq '.[] | .commit.message')"
+        COMMITS=curl ${{ github.event.pull_request._links.commits.href }} | jq 'map(.commit.message)'
+        echo "::set-output name=matrix::$COMMIT"
 
     - name: Show commits
       run: |
@@ -73,7 +73,7 @@ jobs:
     name: JIRA In progress
     strategy:
       matrix: 
-        message: ${{ github.event.pull_request._links.commits.href.*.commit.message }}
+        message: ${{ steps.commits.outputs.matrix }}
     steps:
     - name: Login to JIRA
       uses: atlassian/gajira-login@master
