@@ -55,7 +55,7 @@ jobs:
     name: JIRA In progress
     strategy:
       matrix: 
-        message: ${{ github.event.pull_request.commits.*.message }}
+        message: ${{ github.event.pull_request._links.commits.*.message }}
     steps:
     - name: Login to JIRA
       uses: atlassian/gajira-login@master
