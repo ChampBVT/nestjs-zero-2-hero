@@ -7,6 +7,7 @@ on:
     types:
       - ready_for_review
       - labeled
+      - opened
 
 name: Jira integrations
 
@@ -14,6 +15,7 @@ jobs:
   in-progress:
     runs-on: ubuntu-latest
     name: JIRA In progress
+    if: ${{ github.event.action == 'converted_to_draft' || github.event.action == 'opened' }}
     # strategy:
     #   matrix: 
     #     message: ${{ github.event.commits.*.message }}
@@ -53,7 +55,7 @@ jobs:
     name: JIRA In progress
     strategy:
       matrix: 
-        message: ${{ github.event.commits.*.message }}
+        message: ${{ github.event.pull_request.commits.*.message }}
     steps:
     - name: Login to JIRA
       uses: atlassian/gajira-login@master
