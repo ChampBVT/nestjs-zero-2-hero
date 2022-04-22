@@ -26,7 +26,7 @@ jobs:
       - name: Download commits
         id: commits
         run: |
-          echo "::set-output name=matrix::{\"message\":$(curl ${{ github.event.pull_request._links.commits.href }} | jq -c 'map(.commit.message)')}"
+          echo "::set-output name=matrix::{\"message\":$(curl -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" ${{ github.event.pull_request._links.commits.href }} | jq -c 'map(.commit.message)')}"
 
       - name: Show commits
         run: |
