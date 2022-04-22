@@ -9,7 +9,6 @@ jobs:
   in-progress:
     runs-on: ubuntu-latest
     name: JIRA ticket In progress
-    needs: get-commits
     strategy:
       matrix: ${{ fromJson(needs.get-commits.outputs.matrix) || github.event.commits.*.message }}
     steps:
