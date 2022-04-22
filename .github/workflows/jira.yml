@@ -73,7 +73,7 @@ jobs:
     name: JIRA In progress
     strategy:
       matrix: 
-        message: ${{ need.get-commits.steps.commits.outputs.matrix }}
+        message: ${{ needs.get-commits.steps.commits.outputs.matrix }}
     steps:
     - name: Login to JIRA
       uses: atlassian/gajira-login@master
