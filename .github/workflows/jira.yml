@@ -48,7 +48,7 @@ jobs:
         transition: "In progress"
 
   done:
-    if: ${{ github.event.action == 'pull_request' }}
+    if: ${{ github.event.action == 'ready_for_review' }}
     runs-on: ubuntu-latest
     name: JIRA In progress
     strategy:
