@@ -9,13 +9,16 @@ name: Jira integrations
 
 jobs:
   in-progress:
-    if: ${{ github.event.action == 'push' }}
     runs-on: ubuntu-latest
     name: JIRA In progress
     strategy:
       matrix: 
         message: ${{ github.event.commits.*.message }}
     steps:
+    - name: Check action
+      run: |
+        echo ${{ github.event.action }}
+
     - name: Login to JIRA
       uses: atlassian/gajira-login@master
       env:
