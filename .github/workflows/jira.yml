@@ -60,17 +60,11 @@ jobs:
       id: commits
       run: |
         curl ${{ github.event.pull_request._links.commits.href }} -o "commits.json"
-        content=`cat commits.json`
-          # the following lines are only required for multi line json
-          content="${content//'%'/'%25'}"
-          content="${content//$'\n'/'%0A'}"
-          content="${content//$'\r'/'%0D'}"
-          # end of optional handling for multi line json
-          echo "::set-output name=matrix::$content"
+        echo "::set-output name=matrix::$(cat commits.json | jq '.[] | .commit.message')"
 
-    # - name: Show commits
-    #   run: |
-    #     echo ${{ steps.commits.outputs.matrix }}
+    - name: Show commits
+      run: |
+        echo ${{ steps.commits.outputs.matrix }}
 
   done:
     if: ${{ github.event.action == 'ready_for_review' }}
