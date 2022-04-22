@@ -37,9 +37,10 @@ jobs:
   in-progress:
     runs-on: ubuntu-latest
     name: JIRA In progress
-    if: ${{ (github.event.action == 'converted_to_draft' || github.event.event_name == 'push') }}
+    if: ${{ github.event.action == 'converted_to_draft' || github.event_name == 'push' }}
+    needs: get-commits
     strategy:
-      matrix: ${{ fromJson(needs.get-commits.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.get-commits.outputs.matrix) || github.event.commits.*.message }}
     steps:
     - name: Login to JIRA
       uses: atlassian/gajira-login@master
