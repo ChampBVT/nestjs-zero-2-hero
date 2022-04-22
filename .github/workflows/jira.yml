@@ -37,7 +37,7 @@ jobs:
   in-progress:
     runs-on: ubuntu-latest
     name: JIRA In progress
-    if: ${{ github.event.action == 'converted_to_draft' || github.event.event_name == 'push' }}
+    if: ${{ (github.event.action == 'converted_to_draft' || github.event.event_name == 'push') }}
     strategy:
       matrix: ${{ fromJson(needs.get-commits.outputs.matrix) }}
     steps:
