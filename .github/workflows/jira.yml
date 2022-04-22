@@ -28,7 +28,7 @@ jobs:
     - name: List found ticket
       run: echo ${{ steps.find-ticket.outputs.issue }}
 
-    - name: Transition issue
+    - name: Transition ticket to in progress
       if: ${{ steps.find-ticket.outputs.issue }}
       uses: atlassian/gajira-transition@master
       with:
