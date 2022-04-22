@@ -27,7 +27,7 @@ jobs:
     name: In progress
     needs: get-commit-messages
     strategy:
-      matrix: ${{fromJson(needs.get-commit-messages.outputs.matrix)}}
+      matrix: ${{needs.get-commit-messages.outputs.matrix}}
     steps:
     - name: Login to JIRA
       uses: atlassian/gajira-login@master
