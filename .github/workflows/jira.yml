@@ -28,7 +28,8 @@ jobs:
     name: In progress
     needs: get-commit-messages
     strategy:
-      matrix: ${{github.event.commits.*.message}}
+      matrix: 
+        message: ${{github.event.commits.*.message}}
     steps:
     - name: Login to JIRA
       uses: atlassian/gajira-login@master
@@ -51,8 +52,7 @@ jobs:
       with:
         from: commits
         string: |
-          ${{ github.event.pull_request.title }}
-          ${{ github.event.pull_request.description }}
+          ${{ matrix.message }}
 
     - name: Transition ticket to in progress
       if: ${{ steps.find-ticket.outputs.issue }}
