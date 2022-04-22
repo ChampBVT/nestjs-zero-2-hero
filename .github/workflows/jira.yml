@@ -59,7 +59,7 @@ jobs:
     - name: Download commits
       id: commits
       run: |
-        curl ${{ github.event.pull_request._links.commits }} -o "commits.json"
+        curl ${{ github.event.pull_request._links.commits.href }} -o "commits.json"
         content=`cat commits.json`
           # the following lines are only required for multi line json
           content="${content//'%'/'%25'}"
@@ -80,7 +80,7 @@ jobs:
     name: JIRA In progress
     strategy:
       matrix: 
-        message: ${{ github.event.pull_request._links.commits.*.commit.message }}
+        message: ${{ github.event.pull_request._links.commits.href.*.commit.message }}
     steps:
     - name: Login to JIRA
       uses: atlassian/gajira-login@master
