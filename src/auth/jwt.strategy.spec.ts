@@ -32,7 +32,7 @@ describe('JwtStrategy', () => {
       userRepository.findOne.mockResolvedValue(user);
       const result = await jwtStrategy.validate({ username: 'Test user' });
       expect(userRepository.findOne).toHaveBeenCalledWith({
-        username: 'Test user',
+        where: { username: 'Test user' },
       });
       expect(result).toEqual(user);
     });

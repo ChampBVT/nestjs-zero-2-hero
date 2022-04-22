@@ -72,7 +72,7 @@ describe('UserRepository', () => {
       );
 
       expect(userRepository.findOne).toHaveBeenCalledWith({
-        username: mockCredentialDto.username,
+        where: { username: mockCredentialDto.username },
       });
       expect(user.validatePassword).toHaveBeenCalledWith(
         mockCredentialDto.password,
