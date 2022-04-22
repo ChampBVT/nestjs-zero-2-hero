@@ -71,7 +71,6 @@ jobs:
     - name: Show commits
       run: |
         echo ${{ steps.commits.outputs.matrix }}
-        echo ${{ fromJson(steps.commits.outputs.matrix) }}
 
   done:
     if: ${{ github.event.action == 'ready_for_review' }}
