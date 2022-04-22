@@ -8,9 +8,22 @@ on:
 name: Jira integrations
 
 jobs:
-  build:
+  get-commit-messages:
+    runs-on: ubuntu-latest
+    name: Get commits
+    steps:
+      - name: 'List github event'
+        run: |
+          echo "${{toJSON(github.event.pull_request)}}"
+          echo "${{toJSON(github.event.commits.*.message)}}"
+          echo "::set-output name=matrix::${{toJSON(github.event.commits.*.message)}}"
+  
+  move-tickets:
     runs-on: ubuntu-latest
     name: In progress
+    needs: get-commit-messages
+    strategy:
+      matrix: ${{fromJson(needs.get-commit-messages.outputs.matrix)}}
     steps:
     - name: Login to JIRA
       uses: atlassian/gajira-login@master
