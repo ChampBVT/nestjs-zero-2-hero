@@ -15,6 +15,8 @@ on:
   pull_request:
     # The branches below must be a subset of the branches above
     branches: [ main ]
+    types:
+      - labeled
 
 jobs:
   analyze:
@@ -33,6 +35,11 @@ jobs:
         # Learn more about CodeQL language support at https://git.io/codeql-language-support
 
     steps:
+    - name: test
+      run: |
+        echo ${{ github.event.pull_request }}
+        echo ${{ github.event.label.name }}
+
     - name: Checkout repository
       uses: actions/checkout@v3
 
