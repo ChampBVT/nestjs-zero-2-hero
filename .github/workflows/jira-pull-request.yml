@@ -55,7 +55,7 @@ jobs:
         string: |
           ${{ matrix.message }}
           ${{ github.event.pull_request.title }}
-          ${{ github.event.pull_request.description }}
+          ${{ github.event.pull_request.body }}
 
     - name: Transition ticket to in progress
       if: ${{ steps.find-ticket.outputs.issue }}
@@ -85,6 +85,8 @@ jobs:
       with:
         string: |
           ${{ matrix.message }}
+          ${{ github.event.pull_request.title }}
+          ${{ github.event.pull_request.body }}
 
     - name: Transition ticket to in progress
       if: ${{ steps.find-ticket.outputs.issue }}
