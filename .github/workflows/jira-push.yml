@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     name: JIRA ticket In progress
     strategy:
-      matrix: ${{ fromJson(needs.get-commits.outputs.matrix) || github.event.commits.*.message }}
+      matrix: ${{ github.event.commits.*.message }}
     steps:
     - name: Login to JIRA
       uses: atlassian/gajira-login@master
