@@ -7,9 +7,9 @@ on:
   pull_request:
     types:
       - labeled
-    branches: [ develop ]
+    branches: [develop]
   push:
-    branches: [ develop ]
+    branches: [develop]
 
 jobs:
   build:
@@ -21,14 +21,14 @@ jobs:
         node-version: [16.x]
         runs-on: [ubuntu-latest]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-        
+
     services:
       postgres:
         image: postgres:13
         ports:
           - 5432:5432
         env:
-          POSTGRES_DB: taskmanagement
+          POSTGRES_DB: taskmanagement_test
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           TZ: UTC
@@ -36,35 +36,35 @@ jobs:
         options: --restart=unless-stopped
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}
-        
-    - name: Installing yarn
-      run: npm install -g yarn
-    
-    - name: Installing dependencies
-      run: yarn install
-      
-    - name: Prettifying
-      run: yarn format
-      
-    - name: Linting
-      run: yarn lint
-      
-    - name: Testing
-      run: yarn test
-      
-    - name: Testing E2E
-      env:
-        NODE_ENV: development
-      run: yarn test:e2e
-    
-    - name: Building
-      run: yarn build
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Installing yarn
+        run: npm install -g yarn
+
+      - name: Installing dependencies
+        run: yarn install
+
+      - name: Prettifying
+        run: yarn format
+
+      - name: Linting
+        run: yarn lint
+
+      - name: Testing
+        run: yarn test
+
+      - name: Testing E2E
+        env:
+          NODE_ENV: development
+        run: yarn test:e2e
+
+      - name: Building
+        run: yarn build
 
   deploy:
     needs: build
@@ -73,55 +73,55 @@ jobs:
       name: development
       url: ${{ steps.deployment-result.outputs.status-url }}
     steps:
-    - name: Remove deploy-dev label
-      uses: actions-ecosystem/action-remove-labels@v1.3.0
-      if: ${{ github.event.action == 'labeled' }}
-      with:
-        labels: |
-         deploy-dev
+      - name: Remove deploy-dev label
+        uses: actions-ecosystem/action-remove-labels@v1.3.0
+        if: ${{ github.event.action == 'labeled' }}
+        with:
+          labels: |
+            deploy-dev
 
-    - name: Deploying
-      run: echo Deploying...
+      - name: Deploying
+        run: echo Deploying...
 
-    - name: Gather deployment result info
-      id: deployment-result
-      env:
-        # TODO: Replace with `${{ secrets.DEV_API_URL }}/status` if possible.
-        DEV_API_STATUS_URL: 'https://google.com'
-      run: echo "::set-output name=status-url::$DEV_API_STATUS_URL"
+      - name: Gather deployment result info
+        id: deployment-result
+        env:
+          # TODO: Replace with `${{ secrets.DEV_API_URL }}/status` if possible.
+          DEV_API_STATUS_URL: 'https://google.com'
+        run: echo "::set-output name=status-url::$DEV_API_STATUS_URL"
 
   qa:
     needs: deploy
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' }}
     strategy:
-      matrix: 
+      matrix:
         message: ${{ github.event.commits.*.message }}
     steps:
-    - name: Check action
-      env:
-        GITHUB_CONTEXT: ${{ toJson(github) }}
-      run: |
-        echo ${{ github.event.action }}
-        echo "$GITHUB_CONTEXT"
+      - name: Check action
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: |
+          echo ${{ github.event.action }}
+          echo "$GITHUB_CONTEXT"
 
-    - name: Login to JIRA
-      uses: atlassian/gajira-login@master
-      env:
-        JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
-        JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-        JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+      - name: Login to JIRA
+        uses: atlassian/gajira-login@master
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
 
-    - name: Find in commit messages
-      id: find-ticket
-      uses: atlassian/gajira-find-issue-key@master
-      with:
-        string: |
-          ${{ matrix.message }}
+      - name: Find in commit messages
+        id: find-ticket
+        uses: atlassian/gajira-find-issue-key@master
+        with:
+          string: |
+            ${{ matrix.message }}
 
-    - name: Transition ticket to in progress
-      if: ${{ steps.find-ticket.outputs.issue }}
-      uses: atlassian/gajira-transition@master
-      with:
-        issue: ${{ steps.find-ticket.outputs.issue }}
-        transition: "QA"
+      - name: Transition ticket to in progress
+        if: ${{ steps.find-ticket.outputs.issue }}
+        uses: atlassian/gajira-transition@master
+        with:
+          issue: ${{ steps.find-ticket.outputs.issue }}
+          transition: 'QA'
