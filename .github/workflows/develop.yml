@@ -92,9 +92,6 @@ jobs:
     needs: deploy
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' }}
-    strategy:
-      matrix:
-        message: ${{ github.event.commits.*.message }}
     steps:
       - name: Check action
         env:
@@ -114,7 +111,8 @@ jobs:
         id: find-ticket
         uses: atlassian/gajira-find-issue-key@master
         with:
-          string: ${{ matrix.message }}
+          string: ${{ join(github.event.commits.*.message, ' ') }}
+          from: ''
 
       - name: Transition ticket to in progress
         if: ${{ steps.find-ticket.outputs.issue }}

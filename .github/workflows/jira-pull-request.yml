@@ -26,7 +26,7 @@ jobs:
       - name: Download commits
         id: commits
         run: |
-          echo "::set-output name=matrix::{\"message\":$(curl ${{ github.event.pull_request._links.commits.href }} | jq -c 'map(.commit.message)')}"
+          echo "::set-output name=matrix::{\"message\":$(curl -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" ${{ github.event.pull_request._links.commits.href }} | jq -c 'map(.commit.message)')}"
 
       - name: Show commits
         run: |
@@ -52,6 +52,7 @@ jobs:
         uses: atlassian/gajira-find-issue-key@master
         with:
           string: ${{ matrix.message }}
+          from: ''
 
       - name: Transition ticket to in progress
         if: ${{ steps.find-ticket.outputs.issue }}
@@ -80,6 +81,7 @@ jobs:
         uses: atlassian/gajira-find-issue-key@master
         with:
           string: ${{ matrix.message }}
+          from: ''
 
       - name: Transition ticket to in progress
         if: ${{ steps.find-ticket.outputs.issue }}
