@@ -16,13 +16,6 @@ jobs:
     outputs:
       matrix: ${{ steps.commits.outputs.matrix }}
     steps:
-      - name: Check action
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: |
-          echo ${{ github.event.action }}
-          echo "$GITHUB_CONTEXT"
-
       - name: Download commits
         id: commits
         run: |
