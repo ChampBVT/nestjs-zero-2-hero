@@ -14,14 +14,7 @@ on:
 jobs:
   build:
     if: ${{ (github.event.action != 'labeled' || github.event.label.name == 'deploy-dev') }}
-    runs-on: ${{ matrix.runs-on }}
-
-    strategy:
-      matrix:
-        node-version: [16.x]
-        runs-on: [ubuntu-latest]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
+    runs-on: ubuntu-latest
     services:
       postgres:
         image: postgres:13
@@ -92,6 +85,9 @@ jobs:
     needs: deploy
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' }}
+    strategy:
+      matrix:
+        message: ${{ github.event.commits.*.message }}
     steps:
       - name: Check action
         env:
@@ -111,7 +107,7 @@ jobs:
         id: find-ticket
         uses: atlassian/gajira-find-issue-key@master
         with:
-          string: ${{ join(github.event.commits.*.message, ' ') }}
+          string: ${{ matrix.message }}
           from: ''
 
       - name: Transition ticket to in progress
