@@ -21,10 +21,6 @@ jobs:
     outputs:
       matrix: ${{ steps.commits.outputs.matrix }}
     steps:
-      - name: Dump GitHub context
-        id: github_context_step
-        run: echo '${{ toJSON(github) }}'
-
       - name: Download commits
         id: commits
         run: |
@@ -37,7 +33,7 @@ jobs:
   in-progress:
     runs-on: ubuntu-latest
     name: JIRA In progress
-    if: ${{ github.event.action == 'converted_to_draft' || github.event.action == 'opened' }}
+    if: ${{ github.event.action != 'ready_for_review' && github.event.pull_request.draft == true }}
     needs: get-commits
     strategy:
       matrix: ${{ fromJson(needs.get-commits.outputs.matrix) }}
@@ -64,7 +60,7 @@ jobs:
           transition: 'In progress'
 
   in-review:
-    if: ${{ github.event.action == 'ready_for_review' }}
+    if: ${{ github.event.action != 'converted_to_draft' && github.event.pull_request.draft == false }}
     runs-on: ubuntu-latest
     needs: get-commits
     name: JIRA In review
