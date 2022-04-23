@@ -5,11 +5,16 @@ on:
       - ready_for_review
       - opened
       - converted_to_draft
+      - synchronize
 
 name: Jira pr integrations
 
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+
 jobs:
-  # Pull_request event doesn't supply any commits reference except the link to the api
+  # Pull_request event doesn't supply any commits reference except the link to the api (private repo need auth)
   get-commits:
     name: Get commits
     runs-on: ubuntu-latest
@@ -28,7 +33,7 @@ jobs:
   in-progress:
     runs-on: ubuntu-latest
     name: JIRA In progress
-    if: ${{ github.event.action == 'converted_to_draft' || github.event.action == 'opened' }}
+    if: ${{ github.event.action != 'ready_for_review' && github.event.pull_request.draft == true }}
     needs: get-commits
     strategy:
       matrix: ${{ fromJson(needs.get-commits.outputs.matrix) }}
@@ -55,7 +60,7 @@ jobs:
           transition: 'In progress'
 
   in-review:
-    if: ${{ github.event.action == 'ready_for_review' }}
+    if: ${{ github.event.action != 'converted_to_draft' && github.event.pull_request.draft == false }}
     runs-on: ubuntu-latest
     needs: get-commits
     name: JIRA In review
@@ -81,4 +86,4 @@ jobs:
         uses: atlassian/gajira-transition@master
         with:
           issue: ${{ steps.find-ticket.outputs.issue }}
-          transition: 'in-review'
+          transition: 'In Review'

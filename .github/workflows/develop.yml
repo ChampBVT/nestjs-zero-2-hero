@@ -1,6 +1,3 @@
-# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
 name: Deploy development
 
 on:
@@ -11,48 +8,26 @@ on:
   push:
     branches: [develop]
 
+# concurrency:
+#   group: ${{ github.ref }}-${{ github.workflow }}
+#   cancel-in-progress: true
+
 jobs:
   build:
     if: ${{ (github.event.action != 'labeled' || github.event.label.name == 'deploy-dev') }}
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:13
-        ports:
-          - 5432:5432
-        env:
-          POSTGRES_DB: taskmanagement_test
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          TZ: UTC
-          PGTZ: UTC
-        options: --restart=unless-stopped
-
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
 
-      - name: Installing yarn
-        run: npm install -g yarn
+      - name: Setup Node
+        uses: actions/setup-node@v3.1.1
+        with:
+          node-version: '16.X'
+          cache: 'yarn'
 
       - name: Installing dependencies
-        run: yarn install
-
-      - name: Prettifying
-        run: yarn format
-
-      - name: Linting
-        run: yarn lint
-
-      - name: Testing
-        run: yarn test
-
-      - name: Testing E2E
-        run: yarn test:e2e
+        run: yarn install --frozen-lockfile --non-interactive
 
       - name: Building
         run: yarn build
