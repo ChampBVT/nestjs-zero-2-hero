@@ -5,7 +5,11 @@ name: Deploy production
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -16,7 +20,7 @@ jobs:
         node-version: [16.x]
         runs-on: [ubuntu-latest]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-        
+
     services:
       postgres:
         image: postgres:13
@@ -31,35 +35,35 @@ jobs:
         options: --restart=unless-stopped
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}
-        
-    - name: Installing yarn
-      run: npm install -g yarn
-    
-    - name: Installing dependencies
-      run: yarn install
-      
-    - name: Prettifying
-      run: yarn format
-      
-    - name: Linting
-      run: yarn lint
-      
-    - name: Testing
-      run: yarn test
-      
-    - name: Testing E2E
-      env:
-        NODE_ENV: development
-      run: yarn test:e2e
-    
-    - name: Building
-      run: yarn build
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Installing yarn
+        run: npm install -g yarn
+
+      - name: Installing dependencies
+        run: yarn install
+
+      - name: Prettifying
+        run: yarn format
+
+      - name: Linting
+        run: yarn lint
+
+      - name: Testing
+        run: yarn test
+
+      - name: Testing E2E
+        env:
+          NODE_ENV: development
+        run: yarn test:e2e
+
+      - name: Building
+        run: yarn build
 
   deploy:
     needs: build
@@ -68,12 +72,12 @@ jobs:
       name: development
       url: ${{ steps.deployment-result.outputs.status-url }}
     steps:
-    - name: Deploying
-      run: echo Deploying...
+      - name: Deploying
+        run: echo Deploying...
 
-    - name: Gather deployment result info
-      id: deployment-result
-      env:
-        # TODO: Replace with `${{ secrets.DEV_API_URL }}/status` if possible.
-        DEV_API_STATUS_URL: 'https://google.com'
-      run: echo "::set-output name=status-url::$DEV_API_STATUS_URL"
+      - name: Gather deployment result info
+        id: deployment-result
+        env:
+          # TODO: Replace with `${{ secrets.DEV_API_URL }}/status` if possible.
+          DEV_API_STATUS_URL: 'https://google.com'
+        run: echo "::set-output name=status-url::$DEV_API_STATUS_URL"

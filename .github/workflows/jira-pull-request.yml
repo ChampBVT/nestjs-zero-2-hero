@@ -8,8 +8,12 @@ on:
 
 name: Jira pr integrations
 
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  # Pull_request event doesn't supply any commits reference except the link to the api
+  # Pull_request event doesn't supply any commits reference except the link to the api (private repo need auth)
   get-commits:
     name: Get commits
     runs-on: ubuntu-latest
