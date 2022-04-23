@@ -20,6 +20,10 @@ jobs:
     outputs:
       matrix: ${{ steps.commits.outputs.matrix }}
     steps:
+      - name: Dump GitHub context
+        id: github_context_step
+        run: echo '${{ toJSON(github) }}'
+
       - name: Download commits
         id: commits
         run: |
@@ -85,4 +89,4 @@ jobs:
         uses: atlassian/gajira-transition@master
         with:
           issue: ${{ steps.find-ticket.outputs.issue }}
-          transition: 'in-review'
+          transition: 'In Review'
